@@ -1,0 +1,12 @@
+{
+  "name": "array-boilerplate",
+  "version": "1.0.0",
+  "description": "Studio Array HTML5 & GULP Boilerplate",
+  "scripts": {
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jens Janson",
+  "license": "MIT",
+  "devDependencies": {}
+}
