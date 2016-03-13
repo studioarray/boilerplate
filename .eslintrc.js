@@ -11,9 +11,13 @@ module.exports = {
 
 	// http://eslint.org/docs/rules/
 	rules: {
-		indent: [2, "tab", {SwitchCase: 1}], // Use tabs instead of spaces
-		semi: [2, "always"], // Enforce semicolons
-		"quote-props": [2, "as-needed"], // Be consistent with quotes
-		eqeqeq: [2, "smart"] // Use type-safe equality operators
+		// Use tabs instead of spaces
+		indent: [2, "tab", {SwitchCase: 1}],
+		// Enforce semicolons
+		semi: [2, "always"],
+		// Use quotes as needed in JS objects
+		"quote-props": [2, "as-needed"],
+		// Use type-safe equality operators
+		eqeqeq: [2, "smart"]
 	}
 };
