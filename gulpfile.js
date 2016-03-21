@@ -126,7 +126,7 @@
 	});
 
 	/**
-	 * Default task
+	 * Default task, will just run build without watch
 	 */
 	gulp.task('default', ['build']);
 
