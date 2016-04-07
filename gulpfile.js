@@ -116,6 +116,7 @@
 		gulp.watch(paths.src.styles, ['build:styles']);
 		gulp.watch(paths.src.scripts, ['build:scripts']);
 		gulp.watch(paths.src.images, ['build:images']);
+		gulp.watch(root.dest + '**/*.html').on('change', browserSync.reload);
 	});
 
 	/**
