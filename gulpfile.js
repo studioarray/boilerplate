@@ -13,7 +13,6 @@
 	 */
 	var autoprefixer = require('autoprefixer'); // prefixes CSS code
 	var doiuse = require('doiuse'); // check for browser support against caniuse db
-	var lost = require('lost'); // postCSS grid system
 	var postcss = require('gulp-postcss'); // postCSS processor
 	var precss = require('precss'); // Use SASS-like code in postCSS
 	var sourcemaps = require('gulp-sourcemaps');
@@ -28,7 +27,8 @@
 	 */
 	var root = {
 		src: 'src/',
-		dest: 'dest/'
+		dist: 'dist/',
+		html: 'index.html'
 	};
 
 	var paths = {
@@ -37,21 +37,28 @@
 			styles: [root.src + 'styles/**/*.css'],
 			images: [root.src + 'images/**/*.*']
 		},
-		dest: {
-			scripts: root.dest + 'js/',
-			styles: root.dest + 'css/',
-			images: root.dest + 'images/'
+		dist: {
+			scripts: root.dist + 'js/',
+			styles: root.dist + 'css/',
+			images: root.dist + 'images/'
 		}
 	};
 
 	var supportedBrowsers = ['> 1%', 'not ie <= 9'];
 
+	// PostCSS processors
+	var postcssProcessors = [
+		precss({}),
+		autoprefixer({browsers: supportedBrowsers}),
+		doiuse({browsers: supportedBrowsers})
+	];
+
 	var browserSyncOptions = {
-		server: root.dest,
+		server: root.dist,
 		files: [
-			paths.dest.styles + '*.css',
-			paths.dest.scripts + '*.js',
-			paths.dest.images + '*.*'
+			paths.dist.styles + '*.css',
+			paths.dist.scripts + '*.js',
+			paths.dist.images + '*.*'
 		],
 		browser: "Google Chrome Canary"
 	};
@@ -62,20 +69,13 @@
 	gulp.task('build', ['build:styles', 'build:scripts', 'build:images']);
 
 	gulp.task('build:styles', ['clean:styles'], function () {
-		// PostCSS processors
-		var processors = [
-			precss({}),
-			lost,
-			autoprefixer({browsers: supportedBrowsers}),
-			doiuse({browsers: supportedBrowsers})
-		];
 
 		// PostCSS process styles, add sourcemap
 		return gulp.src(paths.src.styles)
 			.pipe(sourcemaps.init())
-			.pipe(postcss(processors))
+			.pipe(postcss(postcssProcessors))
 			.pipe(sourcemaps.write('.'))
-			.pipe(gulp.dest(paths.dest.styles));
+			.pipe(gulp.dest(paths.dist.styles));
 	});
 
 	gulp.task('build:scripts', ['clean:scripts'], function () {
@@ -83,13 +83,13 @@
 		return gulp.src(paths.src.scripts)
 			.pipe(eslint())
 			.pipe(eslint.format())
-			.pipe(gulp.dest(paths.dest.scripts));
+			.pipe(gulp.dest(paths.dist.scripts));
 	});
 
 	gulp.task('build:images', ['clean:images'], function () {
 		// todo process images
 		return gulp.src(paths.src.images)
-			.pipe(gulp.dest(paths.dest.images));
+			.pipe(gulp.dest(paths.dist.images));
 	});
 
 	/**
@@ -98,15 +98,15 @@
 	gulp.task('clean', ['clean:images', 'clean:styles', 'clean:scripts']);
 
 	gulp.task('clean:images', function() {
-		del.sync([paths.dest.images]);
+		del.sync([paths.dist.images]);
 	});
 
 	gulp.task('clean:styles', function() {
-		del.sync([paths.dest.styles]);
+		del.sync([paths.dist.styles]);
 	});
 
 	gulp.task('clean:scripts', function() {
-		del.sync([paths.dest.scripts]);
+		del.sync([paths.dist.scripts]);
 	});
 
 	/**
@@ -116,7 +116,8 @@
 		gulp.watch(paths.src.styles, ['build:styles']);
 		gulp.watch(paths.src.scripts, ['build:scripts']);
 		gulp.watch(paths.src.images, ['build:images']);
-		gulp.watch(root.dest + '**/*.html').on('change', browserSync.reload);
+		gulp.watch(root.html).on('change', browserSync.reload);
+		gulp.watch(root.dist + '**/*.html').on('change', browserSync.reload);
 	});
 
 	/**

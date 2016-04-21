@@ -1,13 +1,23 @@
 {
   "name": "array-boilerplate",
   "version": "1.0.0",
-  "description": "Simple HTML gulp boilerplate",
+  "description": "Angular 2 boilerplate",
   "scripts": {
-    "build": "gulp watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "gulp watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typings": "typings",
+    "postinstall": "typings install"
   },
   "author": "Jens Janson",
   "license": "MIT",
+  "dependencies": {
+    "angular2": "2.0.0-beta.15",
+    "systemjs": "0.19.26",
+    "es6-shim": "^0.35.0",
+    "reflect-metadata": "0.1.2",
+    "rxjs": "5.0.0-beta.2",
+    "zone.js": "0.6.10"
+  },
   "devDependencies": {
     "autoprefixer": "^6.3.3",
     "browser-sync": "^2.11.1",
@@ -17,7 +27,8 @@
     "gulp-eslint": "^2.0.0",
     "gulp-postcss": "^6.1.0",
     "gulp-sourcemaps": "^1.6.0",
-    "lost": "^6.7.2",
-    "precss": "^1.4.0"
+    "precss": "^1.4.0",
+    "typescript": "^1.8.10",
+    "typings":"^0.7.12"
   }
 }
