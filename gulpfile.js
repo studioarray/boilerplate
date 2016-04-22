@@ -14,7 +14,7 @@
 	var autoprefixer = require('autoprefixer'); // prefixes CSS code
 	var doiuse = require('doiuse'); // check for browser support against caniuse db
 	var postcss = require('gulp-postcss'); // postCSS processor
-	var precss = require('precss'); // Use SASS-like code in postCSS
+	var sass = require('gulp-sass');
 	var sourcemaps = require('gulp-sourcemaps');
 
 	/**
@@ -26,110 +26,102 @@
 	 *  Source and destination paths
 	 */
 	var root = {
-		src: 'src/',
-		dist: 'dist/',
+		dev: 'src/',
+		production: 'dist/',
 		html: 'index.html'
 	};
 
 	var paths = {
-		src: {
-			scripts: [root.src + 'scripts/**/*.js'],
-			styles: [root.src + 'styles/**/*.css'],
-			images: [root.src + 'images/**/*.*']
+		dev: {
+			app: [root.dev + 'app'],
+			styles: [root.dev + 'styles'],
+			fonts: [root.dev + 'fonts'],
+			favicon: [root.dev + 'favicon'],
+			images: [root.dev + 'images']
 		},
-		dist: {
-			scripts: root.dist + 'js/',
-			styles: root.dist + 'css/',
-			images: root.dist + 'images/'
+		production: {
+			scripts: root.production + 'assets/js',
+			styles: root.production + 'assets/css',
+			images: root.production + 'assets/images'
 		}
 	};
+
+	var files = {
+		dev: {
+			scss: paths.dev.styles + '/**/*.scss',
+			typescript: paths.dev.app + '/**/*.ts',
+			js: paths.dev.app + '/**/*.js',
+			css: [paths.dev.styles + '/*.css', paths.dev.styles + '/*.map']
+		},
+		production: {
+			js: '/**/*.js',
+			css: '/**/*.css',
+			html: '/**/*.html',
+			images: '/**/*.jpg'
+		}
+	}
 
 	var supportedBrowsers = ['> 1%', 'not ie <= 9'];
 
 	// PostCSS processors
 	var postcssProcessors = [
-		precss({}),
 		autoprefixer({browsers: supportedBrowsers}),
 		doiuse({browsers: supportedBrowsers})
 	];
 
-	var browserSyncOptions = {
-		server: root.dist,
+	var defaultTestBrowser = "Google Chrome Canary";
+
+	var bsProduction = {
+		server: root.production,
 		files: [
-			paths.dist.styles + '*.css',
-			paths.dist.scripts + '*.js',
-			paths.dist.images + '*.*'
+			paths.production.styles + '/*.css',
+			paths.production.scripts + '/*.js',
+			paths.production.images + '/*.*'
 		],
-		browser: "Google Chrome Canary"
+		browser: defaultTestBrowser
 	};
 
-	/**
-	 * Build tasks
+	/*
+	 * Development
 	 */
-	gulp.task('build', ['build:styles', 'build:scripts', 'build:images']);
 
-	gulp.task('build:styles', ['clean:styles'], function () {
+	gulp.task('dev', ['dev:styles', 'dev:watch'])
 
-		// PostCSS process styles, add sourcemap
-		return gulp.src(paths.src.styles)
+	// SCSS and PostCSS process styles, adds sourcemap
+	gulp.task('dev:styles', ['dev:clean:styles'], function () {
+		return gulp.src(files.dev.scss)
 			.pipe(sourcemaps.init())
+    	.pipe(sass().on('error', sass.logError))
 			.pipe(postcss(postcssProcessors))
 			.pipe(sourcemaps.write('.'))
-			.pipe(gulp.dest(paths.dist.styles));
+			.pipe(gulp.dest(paths.dev.styles.toString()));
 	});
 
-	gulp.task('build:scripts', ['clean:scripts'], function () {
-		// todo process scripts
-		return gulp.src(paths.src.scripts)
-			.pipe(eslint())
-			.pipe(eslint.format())
-			.pipe(gulp.dest(paths.dist.scripts));
+	// Clean
+	gulp.task('dev:clean:styles', function() {
+		del.sync(files.dev.css);
 	});
 
-	gulp.task('build:images', ['clean:images'], function () {
-		// todo process images
-		return gulp.src(paths.src.images)
-			.pipe(gulp.dest(paths.dist.images));
+	// Watch files
+	gulp.task('dev:watch', ['dev:browser'], function() {
+		gulp.watch(files.dev.scss, ['dev:styles']);
+		gulp.watch([root.html, files.dev.js]).on('change', browserSync.reload);
 	});
 
-	/**
-	 * Clean tasks
-	 */
-	gulp.task('clean', ['clean:images', 'clean:styles', 'clean:scripts']);
-
-	gulp.task('clean:images', function() {
-		del.sync([paths.dist.images]);
+	// Launch BrowserSync
+	gulp.task('dev:browser', function() {
+		browserSync.init({
+			server: '.',
+			files: [
+				paths.dev.styles + '/*.css',
+				paths.dev.app + '/*.js',
+				paths.dev.images + '/*.*'
+			],
+			browser: defaultTestBrowser
+		});
 	});
 
-	gulp.task('clean:styles', function() {
-		del.sync([paths.dist.styles]);
-	});
-
-	gulp.task('clean:scripts', function() {
-		del.sync([paths.dist.scripts]);
-	});
-
-	/**
-	 * Watch task
-	 */
-	gulp.task('watch', ['build', 'browser'], function() {
-		gulp.watch(paths.src.styles, ['build:styles']);
-		gulp.watch(paths.src.scripts, ['build:scripts']);
-		gulp.watch(paths.src.images, ['build:images']);
-		gulp.watch(root.html).on('change', browserSync.reload);
-		gulp.watch(root.dist + '**/*.html').on('change', browserSync.reload);
-	});
-
-	/**
-	 * Browser sync
-	 */
-	gulp.task('browser', function() {
-		browserSync.init(browserSyncOptions);
-	});
-
-	/**
-	 * Default task, will just run build without watch
-	 */
-	gulp.task('default', ['build']);
+	// Launch dev as default
+	gulp.task('default', ['dev']);
 
 })();

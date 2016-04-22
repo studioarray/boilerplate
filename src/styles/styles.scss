@@ -1,0 +1,6 @@
+$bg: black;
+
+.test {
+  background: $bg;
+  color: invert($bg);
+}

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Angular 2 boilerplate",
   "scripts": {
-    "watch": "gulp watch",
+    "start": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typings": "typings",
     "postinstall": "typings install"
@@ -26,9 +26,10 @@
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
     "gulp-postcss": "^6.1.0",
+    "gulp-sass": "^2.3.0",
     "gulp-sourcemaps": "^1.6.0",
     "precss": "^1.4.0",
     "typescript": "^1.8.10",
-    "typings":"^0.7.12"
+    "typings": "^0.7.12"
   }
 }

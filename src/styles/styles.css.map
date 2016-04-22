@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.scss"],"names":[],"mappings":"AAEA;EACE,kBAHQ;EAIR,aAAa,EACd","file":"styles.css","sourcesContent":["$bg: black;\n\n.test {\n  background: $bg;\n  color: invert($bg);\n}\n"],"sourceRoot":"/source/"}
